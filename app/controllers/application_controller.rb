@@ -1,28 +1,46 @@
-class ApplicationController < ActionController::Base
-  # Prevent CSRF attacks by raising an exception.
-  # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
-  
-  private
-  
-  # Returns the active order for this session
-  def current_order
-    @current_order ||= begin
-      if has_order?
-        @current_order
-      else
-        order = Shoppe::Order.create(:ip_address => request.ip, :billing_country => Shoppe::Country.where(:name => "United Kingdom").first)
-        session[:order_id] = order.id
-        order
+module Shoppe
+  class ApplicationController < ActionController::Base
+    
+    before_filter :login_required
+    
+    rescue_from ActiveRecord::DeleteRestrictionError do |e|
+      redirect_to request.referer || root_path, :alert => e.message
+    end
+    
+    rescue_from Shoppe::Error do |e|
+      @exception = e
+      render :layout => 'shoppe/sub', :template => 'shoppe/shared/error'
+    end
+
+    private
+
+    def login_required
+      unless logged_in?
+        redirect_to login_path
       end
     end
+
+    def logged_in?
+      current_user.is_a?(User)
+    end
+    
+    def current_user
+      @current_user ||= login_from_session || login_with_demo_mdoe || :false
+    end
+
+    def login_from_session
+      if session[:shoppe_user_id]
+        @user = User.find_by_id(session[:shoppe_user_id])
+      end
+    end
+    
+    def login_with_demo_mdoe
+      if Shoppe.settings.demo_mode?
+        @user = User.first
+      end
+    end
+    
+    helper_method :current_user, :logged_in?
+    
   end
-  
-  # Has an active order?
-  def has_order?
-    session[:order_id] && @current_order = Shoppe::Order.includes(:order_items => :ordered_item).find_by_id(session[:order_id])
-  end
-  
-  helper_method :current_order, :has_order?
-  
 end

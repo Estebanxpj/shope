@@ -1,42 +1,47 @@
-class ProductsController < ApplicationController
+module Shoppe
+  class ProductsController < Shoppe::ApplicationController
   
-  before_filter do
-    if params[:category_id]
-      @product_category = Shoppe::ProductCategory.where(:permalink => params[:category_id]).first!
+    before_filter { @active_nav = :products }
+    before_filter { params[:id] && @product = Shoppe::Product.root.find(params[:id]) }
+  
+    def index
+      @products = Shoppe::Product.root.includes(:stock_level_adjustments, :default_image, :product_category, :variants).order(:name).group_by(&:product_category).sort_by { |cat,pro| cat.name }
     end
-    if @product_category && params[:product_id]
-      @product = @product_category.products.where(:permalink => params[:product_id]).active.first!      
+  
+    def new
+      @product = Shoppe::Product.new
     end
-  end
   
-  def index
-    @products = @product_category.products.includes(:default_image, :product_category, :variants).root.active
-  end
-  
-  def filter
-    @products = Shoppe::Product.active.with_attributes(params[:key].to_s, params[:value].to_s)
-  end
-  
-  def categories
-    @product_categories = Shoppe::ProductCategory.ordered.includes(:image)
-  end
-  
-  def show
-    @attributes = @product.product_attributes.public.to_a
-  end
-  
-  def add_to_basket
-    product_to_order = params[:variant] ? @product.variants.find(params[:variant].to_i) : @product
-    current_order.order_items.add_item(product_to_order, params[:quantity].blank? ? 1 : params[:quantity].to_i)
-    respond_to do |wants|
-      wants.html { redirect_to request.referer }
-      wants.json { render :json => {:added => true} }
+    def create
+      @product = Shoppe::Product.new(safe_params)
+      if @product.save
+        redirect_to :products, :flash => {:notice => "Product has been created successfully"}
+      else
+        render :action => "new"
+      end
     end
-  rescue Shoppe::Errors::NotEnoughStock => e
-    respond_to do |wants|
-      wants.html { redirect_to request.referer, :alert => "We're sorry but we don't have enough stock to add that many products. We currently have #{e.available_stock} item(s) in stock. Please try again."}
-      wants.json { render :json => {:error => 'NotEnoughStock', :available_stock => e.available_stock}}
-    end
-  end
   
+    def edit
+    end
+  
+    def update
+      if @product.update(safe_params)
+        redirect_to [:edit, @product], :flash => {:notice => "Product has been updated successfully"}
+      else
+        render :action => "edit"
+      end
+    end
+  
+    def destroy
+      @product.destroy
+      redirect_to :products, :flash => {:notice => "Product has been removed successfully"}
+    end
+    
+    private
+  
+    def safe_params
+      params[:product].permit(:product_category_id, :name, :sku, :permalink, :description, :short_description, :weight, :price, :cost_price, :tax_rate_id, :stock_control, :default_image_file, :data_sheet_file, :active, :featured, :in_the_box, :product_attributes_array => [:key, :value, :searchable, :public])
+    end
+  
+  end
 end
