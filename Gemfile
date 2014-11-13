@@ -4,9 +4,6 @@ source 'https://rubygems.org'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.5'
 # Use sqlite3 as the database for Active Record
-gem 'activerecord-sqlserver-adapter'
-gem 'ruby-odbc'
-gem 'sqlite3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
@@ -28,8 +25,10 @@ gem 'sdoc', '~> 0.4.0',          group: :doc
 
 group :development do
   gem 'capistrano'
-   gem 'sqlite3'
- gem "tux"
+  gem 'activerecord-sqlserver-adapter'
+  gem 'sqlite3'
+  gem 'ruby-odbc'
+  gem "tux"
 end
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
