@@ -10,9 +10,11 @@ gem "nifty-attachments", ">= 1.0.3", "< 2.0.0"
 gem "nifty-dialog", "~> 1.0"
 
 group :development do
-	gem 'sqlite3'
-	gem 'activerecord-sqlserver-adapter'
-	gem 'ruby-odbc'
+  gem 'capistrano'
+  gem 'activerecord-sqlserver-adapter'
+  gem 'sqlite3'
+  gem 'ruby-odbc'
+  gem "tux"
 end
 
 # Use SCSS for stylesheets
