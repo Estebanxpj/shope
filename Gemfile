@@ -8,9 +8,13 @@ gem "nifty-key-value-store", ">= 1.0.1", "< 2.0.0"
 gem "nifty-utils", "~> 1.0"
 gem "nifty-attachments", ">= 1.0.3", "< 2.0.0"
 gem "nifty-dialog", "~> 1.0"
-#gem 'sqlite3'
-gem 'activerecord-sqlserver-adapter'
-gem 'ruby-odbc'
+
+group :development do
+	gem 'sqlite3'
+	gem 'activerecord-sqlserver-adapter'
+	gem 'ruby-odbc'
+end
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
 # Use Uglifier as compressor for JavaScript assets
