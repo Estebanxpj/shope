@@ -11,45 +11,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131102143930) do
+ActiveRecord::Schema.define(version: 20141027210727) do
 
-  create_table "nifty_attachments", force: true do |t|
-    t.integer  "parent_id"
-    t.string   "parent_type"
-    t.string   "token"
-    t.string   "digest"
-    t.string   "role"
-    t.string   "file_name"
-    t.string   "file_type"
-    t.binary   "data",        limit: 16777215
+  create_table "clients", force: true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "nifty_key_value_store", force: true do |t|
-    t.integer "parent_id"
-    t.string  "parent_type"
-    t.string  "group"
-    t.string  "name"
-    t.string  "value"
+  create_table "countries", force: true do |t|
+    t.string   "name"
+    t.string   "code2"
+    t.string   "code3"
+    t.string   "continent"
+    t.string   "tld"
+    t.string   "currency"
+    t.boolean  "eu_member",  default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  create_table "shoppe_countries", force: true do |t|
-    t.string  "name"
-    t.string  "code2"
-    t.string  "code3"
-    t.string  "continent"
-    t.string  "tld"
-    t.string  "currency"
-    t.boolean "eu_member", default: false
-  end
-
-  create_table "shoppe_delivery_service_prices", force: true do |t|
+  create_table "delivery_service_prices", force: true do |t|
     t.integer  "delivery_service_id"
     t.string   "code"
     t.decimal  "price",               precision: 8, scale: 2
-    t.integer  "tax_rate_id"
     t.decimal  "cost_price",          precision: 8, scale: 2
+    t.integer  "tax_rate_id"
     t.decimal  "min_weight",          precision: 8, scale: 2
     t.decimal  "max_weight",          precision: 8, scale: 2
     t.datetime "created_at"
@@ -57,7 +43,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.text     "country_ids"
   end
 
-  create_table "shoppe_delivery_services", force: true do |t|
+  create_table "delivery_services", force: true do |t|
     t.string   "name"
     t.string   "code"
     t.boolean  "default",      default: false
@@ -68,9 +54,10 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.string   "tracking_url"
   end
 
-  create_table "shoppe_order_items", force: true do |t|
+  create_table "order_items", force: true do |t|
     t.integer  "order_id"
     t.integer  "ordered_item_id"
+    t.string   "ordered_item_type"
     t.integer  "quantity",                                  default: 1
     t.decimal  "unit_price",        precision: 8, scale: 2
     t.decimal  "unit_cost_price",   precision: 8, scale: 2
@@ -79,23 +66,18 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.decimal  "weight",            precision: 8, scale: 3
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "ordered_item_type"
   end
 
-  create_table "shoppe_orders", force: true do |t|
+  create_table "orders", force: true do |t|
     t.string   "token"
     t.string   "first_name"
     t.string   "last_name"
     t.string   "company"
     t.string   "billing_address1"
-    t.string   "billing_address2"
-    t.string   "billing_address3"
-    t.string   "billing_address4"
     t.string   "billing_postcode"
     t.integer  "billing_country_id"
-    t.string   "email_address"
     t.integer  "tax_rate_id"
-    t.integer  "client_id"
+    t.string   "email_address"
     t.string   "phone_number"
     t.string   "status"
     t.datetime "received_at"
@@ -118,9 +100,6 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.boolean  "separate_delivery_address",                         default: false
     t.string   "delivery_name"
     t.string   "delivery_address1"
-    t.string   "delivery_address2"
-    t.string   "delivery_address3"
-    t.string   "delivery_address4"
     t.string   "delivery_postcode"
     t.integer  "delivery_country_id"
     t.decimal  "amount_paid",               precision: 8, scale: 2, default: 0.0
@@ -128,7 +107,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.string   "invoice_number"
   end
 
-  create_table "shoppe_payments", force: true do |t|
+  create_table "payments", force: true do |t|
     t.integer  "order_id"
     t.decimal  "amount",            precision: 8, scale: 2, default: 0.0
     t.string   "reference"
@@ -142,7 +121,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.datetime "updated_at"
   end
 
-  create_table "shoppe_product_attributes", force: true do |t|
+  create_table "product_attributes", force: true do |t|
     t.integer  "product_id"
     t.string   "key"
     t.string   "value"
@@ -153,7 +132,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.boolean  "public",     default: true
   end
 
-  create_table "shoppe_product_categories", force: true do |t|
+  create_table "product_categories", force: true do |t|
     t.string   "name"
     t.string   "permalink"
     t.text     "description"
@@ -161,7 +140,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.datetime "updated_at"
   end
 
-  create_table "shoppe_products", force: true do |t|
+  create_table "products", force: true do |t|
     t.integer  "parent_id"
     t.integer  "product_category_id"
     t.string   "name"
@@ -172,8 +151,8 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.boolean  "active",                                      default: true
     t.decimal  "weight",              precision: 8, scale: 3, default: 0.0
     t.decimal  "price",               precision: 8, scale: 2, default: 0.0
-    t.integer  "tax_rate_id"
     t.decimal  "cost_price",          precision: 8, scale: 2, default: 0.0
+    t.integer  "tax_rate_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "featured",                                    default: false
@@ -182,13 +161,15 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.boolean  "default",                                     default: false
   end
 
-  create_table "shoppe_settings", force: true do |t|
-    t.string "key"
-    t.string "value"
-    t.string "value_type"
+  create_table "settings", force: true do |t|
+    t.string   "key"
+    t.string   "value"
+    t.string   "value_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  create_table "shoppe_stock_level_adjustments", force: true do |t|
+  create_table "stok_level_adjustments", force: true do |t|
     t.integer  "item_id"
     t.string   "item_type"
     t.string   "description"
@@ -199,7 +180,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.datetime "updated_at"
   end
 
-  create_table "shoppe_tax_rates", force: true do |t|
+  create_table "tax_rates", force: true do |t|
     t.string   "name"
     t.decimal  "rate",         precision: 8, scale: 2
     t.datetime "created_at"
@@ -208,7 +189,7 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.string   "address_type"
   end
 
-  create_table "shoppe_users", force: true do |t|
+  create_table "users", force: true do |t|
     t.string   "first_name"
     t.string   "last_name"
     t.string   "email_address"
@@ -217,18 +198,9 @@ ActiveRecord::Schema.define(version: 20131102143930) do
     t.datetime "updated_at"
   end
 
-     create_table "shoppe_client", force: true do |t|
-      t.string   "nit"
-      t.string   "first_name"
-      t.string   "last_name"
-      t.string   "company"
-      t.string   "billing_address1"
-      t.string   "billing_postcode"
-      t.integer  "billing_country_id"
-      t.integer  "tax_rate_id"
-      t.string   "email_address"
-      t.string   "phone_number"  
-      t.datetime "created_at"
-      t.datetime "updated_at"
+  def down
+    [:users, :tax_rates, :stock_level_adjustments, :settings, :products, :product_categories, :product_attributes, :orders, :order_items, :delivery_services, :delivery_service_prices, :countries].each do |table|
+      drop_table "commitbox_#{table}"
     end
+
 end

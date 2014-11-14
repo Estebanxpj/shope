@@ -8,6 +8,6 @@ development:
   adapter: sqlserver
   dsn: mydns
   mode: odbc
-  database: Mystor
+  database: FACTU001
   username: Esteban
   password: acer
