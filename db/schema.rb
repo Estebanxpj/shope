@@ -14,6 +14,18 @@
 ActiveRecord::Schema.define(version: 20141027210727) do
 
   create_table "clients", force: true do |t|
+    t.string   "nit"
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "company"
+    t.string   "billing_address1"
+    t.string   "billing_postcode"
+    t.integer  "billing_country_id"
+    t.integer  "tax_rate_id"
+    t.string   "email_address"
+    t.string   "phone_number"  
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -74,9 +86,12 @@ ActiveRecord::Schema.define(version: 20141027210727) do
     t.string   "last_name"
     t.string   "company"
     t.string   "billing_address1"
+    t.string   "billing_address2"
+    t.string   "billing_address3"
+    t.string   "billing_address4"
     t.string   "billing_postcode"
     t.integer  "billing_country_id"
-    t.integer  "tax_rate_id"
+    t.integer  "client_id"
     t.string   "email_address"
     t.string   "phone_number"
     t.string   "status"
@@ -100,6 +115,9 @@ ActiveRecord::Schema.define(version: 20141027210727) do
     t.boolean  "separate_delivery_address",                         default: false
     t.string   "delivery_name"
     t.string   "delivery_address1"
+    t.string   "delivery_address2"
+    t.string   "delivery_address3"
+    t.string   "delivery_address4"
     t.string   "delivery_postcode"
     t.integer  "delivery_country_id"
     t.decimal  "amount_paid",               precision: 8, scale: 2, default: 0.0
@@ -197,10 +215,5 @@ ActiveRecord::Schema.define(version: 20141027210727) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  def down
-    [:users, :tax_rates, :stock_level_adjustments, :settings, :products, :product_categories, :product_attributes, :orders, :order_items, :delivery_services, :delivery_service_prices, :countries].each do |table|
-      drop_table "commitbox_#{table}"
-    end
 
 end
